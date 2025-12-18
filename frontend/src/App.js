@@ -45,13 +45,13 @@ const AppShell = () => {
         <p>
           © All rights reserved. |{" "}
           <a
-            href="https://www.linkedin.com/in/guptaachyut/"
+            href="https://www.linkedin.com/in/manyaakapoor/"
             style={{ color: "white" }}
           >
             LinkedIn
           </a>{" "}
           |{" "}
-          <a href="https://github.com/Lucifer4602" style={{ color: "white" }}>
+          <a href="https://github.com/manyaxkapoor" style={{ color: "white" }}>
             GitHub
           </a>
         </p>
