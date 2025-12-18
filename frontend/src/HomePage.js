@@ -69,7 +69,7 @@ int main() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3001/api/${selectedLanguage}`,
+        `http://localhost:3002/api/${selectedLanguage}`,
         {
           method: "POST",
           headers: {
