@@ -5,7 +5,7 @@ const {exec} = require('child_process');
 const fs = require('fs');
 
 const app = express();
-const port = 3001;
+const port = 3002;
 
 app.use(bodyParser.json());
 app.use(cors());

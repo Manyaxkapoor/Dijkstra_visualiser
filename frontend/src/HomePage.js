@@ -104,17 +104,16 @@ int main() {
       <section className="intro">
         <h2>What is Dijkstra's Algorithm?</h2>
         <p>
-          Dijkstra's algorithm is a famous algorithm used for finding the
-          shortest paths between nodes in a graph. It was conceived by computer
-          scientist Edsger W. Dijkstra in 1956 and is widely used in various
-          applications, including GPS navigation systems and network routing
-          protocols.
+          Dijkstra&apos;s algorithm finds the shortest paths from a source node to all
+          other nodes in a weighted graph with non-negative edge weights. It was
+          introduced by Edsger W. Dijkstra in 1956 and underpins modern routing,
+          navigation and network optimization systems.
         </p>
         <p>
-          The algorithm works by iteratively selecting the vertex with the
-          smallest known distance from the source vertex and updating the
-          distances to its neighboring vertices. This process continues until
-          the shortest path to all vertices is determined.
+          The core idea is to repeatedly expand the closest unexplored node,
+          relaxing (updating) distances to its neighbours until the best-known
+          distance to every reachable node is fixed. This visualizer lets you
+          see that process step-by-step on a grid.
         </p>
       </section>
       <section className="code-editor">
@@ -126,7 +125,7 @@ int main() {
           placeholder="Enter your code here..."
         />
         <div className="language-select">
-          <label htmlFor="language">Select Language:</label>
+          <label htmlFor="language">Select language:</label>
           <select
             id="language"
             value={selectedLanguage}
@@ -135,8 +134,8 @@ int main() {
             <option value="cpp">C++</option>
           </select>
         </div>
-        <button onClick={runCode} disabled={loading}>
-          {loading ? "Running..." : "Run Code"}
+        <button className="primary-button" onClick={runCode} disabled={loading}>
+          {loading ? "Running..." : "Run code"}
         </button>
       </section>
       <section className="output">
@@ -146,10 +145,10 @@ int main() {
       <section className="applications">
         <h2>Applications</h2>
         <p>
-          Dijkstra's algorithm is used in various fields such as transportation
-          networks, computer networks, and even in biology for analyzing
-          metabolic pathways. Its efficiency and simplicity make it a
-          fundamental algorithm in graph theory and computer science.
+          Dijkstra&apos;s algorithm powers GPS navigation, network routing,
+          scheduling, and many optimization problems where we care about
+          cheapest or fastest routes. Understanding the algorithm visually makes
+          it much easier to reason about graphs and shortest path problems.
         </p>
       </section>
     </div>

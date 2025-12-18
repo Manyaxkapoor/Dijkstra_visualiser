@@ -1,24 +1,46 @@
 import React from "react";
-import { Route, Link, Routes } from "react-router-dom";
+import { Route, Link, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import PathfindingVisualizerPage from "./PathfindingVisualizerPage";
 import HomePage from "./HomePage";
 
-function App() {
+const AppShell = () => {
+  const location = useLocation();
+
   return (
     <div className="App">
       <header className="header">
-        <h1>Dijkstra's Algorithm</h1>
-        <p>An Amazing Algorithm</p>
+        <div className="header-title">
+          <h1>Dijkstra&apos;s Algorithm Visualizer</h1>
+          <p>Understand shortest paths through interactive visualization & code.</p>
+        </div>
         <nav>
-          <Link to="/">Home</Link>
-          <Link to="/visualizer">Visualizer</Link>
+          <Link
+            to="/"
+            className={location.pathname === "/" ? "nav-link-active" : ""}
+          >
+            Home
+          </Link>
+          <Link
+            to="/visualizer"
+            className={
+              location.pathname === "/visualizer" ? "nav-link-active" : ""
+            }
+          >
+            Visualizer
+          </Link>
         </nav>
       </header>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/visualizer" element={<PathfindingVisualizerPage />} />
-      </Routes>
+
+      <main className="main-layout">
+        <div className="content-container">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/visualizer" element={<PathfindingVisualizerPage />} />
+          </Routes>
+        </div>
+      </main>
+
       <footer className="footer">
         <p>
           © All rights reserved. |{" "}
@@ -36,6 +58,10 @@ function App() {
       </footer>
     </div>
   );
+};
+
+function App() {
+  return <AppShell />;
 }
 
 export default App;

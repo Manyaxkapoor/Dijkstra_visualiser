@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from "react";
 
-import Node from './Node/Node';
-import {dijkstra, getNodesInShortestPathOrder} from '../algorithms/dijkstra';
+import Node from "./Node/Node";
+import { dijkstra, getNodesInShortestPathOrder } from "../algorithms/dijkstra";
 
-import './PathfindingVisualizer.css';
+import "./PathfindingVisualizer.css";
 
 const START_NODE_ROW = 10;
 const START_NODE_COL = 15;
@@ -79,34 +79,48 @@ export default class PathfindingVisualizer extends Component {
 
     return (
       <>
-        <button onClick={() => this.visualizeDijkstra()}>
-          Visualize Dijkstra's Algorithm
-        </button>
-        <div className="grid">
-          {grid.map((row, rowIdx) => {
-            return (
-              <div key={rowIdx}>
-                {row.map((node, nodeIdx) => {
-                  const {row, col, isFinish, isStart, isWall} = node;
-                  return (
-                    <Node
-                      key={nodeIdx}
-                      col={col}
-                      isFinish={isFinish}
-                      isStart={isStart}
-                      isWall={isWall}
-                      mouseIsPressed={mouseIsPressed}
-                      onMouseDown={(row, col) => this.handleMouseDown(row, col)}
-                      onMouseEnter={(row, col) =>
-                        this.handleMouseEnter(row, col)
-                      }
-                      onMouseUp={() => this.handleMouseUp()}
-                      row={row}></Node>
-                  );
-                })}
-              </div>
-            );
-          })}
+        <div className="visualizer-card">
+          <div className="visualizer-header">
+            <div className="visualizer-header-left">
+              <h2>Dijkstra pathfinding visualizer</h2>
+              <p>Draw walls, then watch Dijkstra explore and find the shortest route.</p>
+            </div>
+            <div className="visualizer-controls">
+              <button
+                className="primary-button"
+                onClick={() => this.visualizeDijkstra()}
+              >
+                Visualize Dijkstra&apos;s Algorithm
+              </button>
+            </div>
+          </div>
+          <div className="grid">
+            {grid.map((row, rowIdx) => {
+              return (
+                <div key={rowIdx}>
+                  {row.map((node, nodeIdx) => {
+                    const { row, col, isFinish, isStart, isWall } = node;
+                    return (
+                      <Node
+                        key={nodeIdx}
+                        col={col}
+                        isFinish={isFinish}
+                        isStart={isStart}
+                        isWall={isWall}
+                        mouseIsPressed={mouseIsPressed}
+                        onMouseDown={(row, col) => this.handleMouseDown(row, col)}
+                        onMouseEnter={(row, col) =>
+                          this.handleMouseEnter(row, col)
+                        }
+                        onMouseUp={() => this.handleMouseUp()}
+                        row={row}
+                      ></Node>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </>
     );
