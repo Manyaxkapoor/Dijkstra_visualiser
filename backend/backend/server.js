@@ -8,7 +8,14 @@ const app = express();
 const port = 3002;
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://dijkstra-visualiser.vercel.app"
+  ],
+  methods: ["GET", "POST"],
+  credentials: true
+}));
 
 app.post('/api/cpp', (req, res) => {
   const code = req.body.code;

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./HomePage.css";
 
 const HomePage = () => {
+  const API_BASE = process.env.REACT_APP_API_URL;
   const [code, setCode] = useState({
     cpp: `#include <iostream>
 #include <vector>
@@ -69,7 +70,7 @@ int main() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3002/api/${selectedLanguage}`,
+        `${API_BASE}/api/${selectedLanguage}`,
         {
           method: "POST",
           headers: {
