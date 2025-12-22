@@ -151,7 +151,7 @@ int main() {
         <h2>Output</h2>
         <pre className="pretag">{output}</pre>
       </section>
-      <section className="applications">
+      <section className="intro">
         <h2>Applications</h2>
         <p>
           Dijkstra&apos;s algorithm powers GPS navigation, network routing,
