@@ -68,6 +68,14 @@ int main() {
 
   const runCode = async () => {
     setLoading(true);
+    const isProd = process.env.NODE_ENV === "production";
+    if (isProd) {
+      setOutput(
+        "Code execution is disabled in production. Please run locally."
+      );
+      setLoading(false);
+      return;
+    }
     try {
       const response = await fetch(
         `${API_BASE}/api/${selectedLanguage}`,
