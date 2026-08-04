@@ -16,6 +16,7 @@ export default class PathfindingVisualizer extends Component {
     this.state = {
       grid: [],
       mouseIsPressed: false,
+      isVisualizing: false,
     };
   }
 
@@ -25,12 +26,17 @@ export default class PathfindingVisualizer extends Component {
   }
 
   handleMouseDown(row, col) {
+    if (this.state.isVisualizing) return;
+    const node = this.state.grid[row][col];
+    if (node.isStart || node.isFinish) return;
     const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
     this.setState({grid: newGrid, mouseIsPressed: true});
   }
 
   handleMouseEnter(row, col) {
-    if (!this.state.mouseIsPressed) return;
+    if (!this.state.mouseIsPressed || this.state.isVisualizing) return;
+    const node = this.state.grid[row][col];
+    if (node.isStart || node.isFinish) return;
     const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
     this.setState({grid: newGrid});
   }
@@ -61,21 +67,39 @@ export default class PathfindingVisualizer extends Component {
         const node = nodesInShortestPathOrder[i];
         document.getElementById(`node-${node.row}-${node.col}`).className =
           'node node-shortest-path';
+        if (i === nodesInShortestPathOrder.length - 1) {
+          this.setState({isVisualizing: false});
+        }
       }, 50 * i);
+    }
+    if (nodesInShortestPathOrder.length === 0) {
+      this.setState({isVisualizing: false});
     }
   }
 
   visualizeDijkstra() {
-    const {grid} = this.state;
+    if (!this.state.grid.length || this.state.isVisualizing) return;
+
+    // Run on clean node state so repeated visualizations are independent.
+    const grid = this.state.grid.map(row =>
+      row.map(node => ({
+        ...node,
+        distance: Infinity,
+        isVisited: false,
+        previousNode: null,
+      }))
+    );
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setState({grid, isVisualizing: true}, () =>
+      this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder)
+    );
   }
 
   render() {
-    const {grid, mouseIsPressed} = this.state;
+    const {grid, mouseIsPressed, isVisualizing} = this.state;
 
     return (
       <>
@@ -89,6 +113,7 @@ export default class PathfindingVisualizer extends Component {
               <button
                 className="primary-button"
                 onClick={() => this.visualizeDijkstra()}
+                disabled={isVisualizing}
               >
                 Visualize Dijkstra&apos;s Algorithm
               </button>

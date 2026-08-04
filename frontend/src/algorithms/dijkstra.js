@@ -28,8 +28,11 @@ function sortNodesByDistance(unvisitedNodes) {
 function updateUnvisitedNeighbors(node, grid) {
   const unvisitedNeighbors = getUnvisitedNeighbors(node, grid);
   for (const neighbor of unvisitedNeighbors) {
-    neighbor.distance = node.distance + 1;
-    neighbor.previousNode = node;
+    const newDistance = node.distance + 1;
+    if (newDistance < neighbor.distance) {
+      neighbor.distance = newDistance;
+      neighbor.previousNode = node;
+    }
   }
 }
 
@@ -60,6 +63,7 @@ function getAllNodes(grid) {
 // Only works when called *after* the dijkstra method above.
 export function getNodesInShortestPathOrder(finishNode) {
   const nodesInShortestPathOrder = [];
+  if (!finishNode || finishNode.distance === Infinity) return nodesInShortestPathOrder;
   let currentNode = finishNode;
   while (currentNode !== null) {
     nodesInShortestPathOrder.unshift(currentNode);
