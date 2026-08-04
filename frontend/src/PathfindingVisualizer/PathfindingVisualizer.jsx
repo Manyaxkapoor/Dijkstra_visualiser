@@ -9,6 +9,11 @@ const START_NODE_ROW = 10;
 const START_NODE_COL = 15;
 const FINISH_NODE_ROW = 10;
 const FINISH_NODE_COL = 35;
+const SPEEDS = {
+  slow: {visit: 34, path: 80},
+  normal: {visit: 16, path: 35},
+  fast: {visit: 5, path: 18},
+};
 
 export default class PathfindingVisualizer extends Component {
   constructor() {
@@ -18,6 +23,9 @@ export default class PathfindingVisualizer extends Component {
       mouseIsPressed: false,
       isVisualizing: false,
       editMode: "wall",
+      speed: "normal",
+      status: "Ready to explore",
+      stats: {visited: 0, path: 0, distance: null},
     };
   }
 
@@ -73,35 +81,35 @@ export default class PathfindingVisualizer extends Component {
     this.setState({editMode, mouseIsPressed: false});
   }
 
-  animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+  animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder, speed) {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
-          this.animateShortestPath(nodesInShortestPathOrder);
-        }, 10 * i);
+          this.animateShortestPath(nodesInShortestPathOrder, speed);
+        }, speed.visit * i);
         return;
       }
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
         const element = document.getElementById(`node-${node.row}-${node.col}`);
         if (element) element.classList.add("node-visited");
-      }, 16 * i);
+      }, speed.visit * i);
     }
   }
 
-  animateShortestPath(nodesInShortestPathOrder) {
+  animateShortestPath(nodesInShortestPathOrder, speed) {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
         const node = nodesInShortestPathOrder[i];
         const element = document.getElementById(`node-${node.row}-${node.col}`);
         if (element) element.classList.add("node-shortest-path");
         if (i === nodesInShortestPathOrder.length - 1) {
-          this.setState({isVisualizing: false});
+          this.setState({isVisualizing: false, status: "Path found"});
         }
-      }, 35 * i);
+      }, speed.path * i);
     }
     if (nodesInShortestPathOrder.length === 0) {
-      this.setState({isVisualizing: false});
+      this.setState({isVisualizing: false, status: "No path found"});
     }
   }
 
@@ -125,13 +133,59 @@ export default class PathfindingVisualizer extends Component {
     });
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    this.setState({grid, isVisualizing: true}, () =>
-      this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder)
+    const speed = SPEEDS[this.state.speed];
+    this.setState({
+      grid,
+      isVisualizing: true,
+      status: "Exploring the graph...",
+      stats: {
+        visited: visitedNodesInOrder.length,
+        path: Math.max(0, nodesInShortestPathOrder.length - 1),
+        distance: finishNode.distance === Infinity ? null : finishNode.distance,
+      },
+    }, () =>
+      this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder, speed)
     );
   }
 
+  clearBoard() {
+    if (this.state.isVisualizing) return;
+    const grid = this.state.grid.map(row =>
+      row.map(node => ({
+        ...node,
+        isWall: false,
+        distance: Infinity,
+        isVisited: false,
+        previousNode: null,
+      }))
+    );
+    this.clearAnimationClasses();
+    this.setState({grid, status: "Ready to explore", stats: {visited: 0, path: 0, distance: null}});
+  }
+
+  randomizeWalls() {
+    if (this.state.isVisualizing) return;
+    const grid = this.state.grid.map(row =>
+      row.map(node => ({
+        ...node,
+        isWall: !node.isStart && !node.isFinish && Math.random() < 0.27,
+        distance: Infinity,
+        isVisited: false,
+        previousNode: null,
+      }))
+    );
+    this.clearAnimationClasses();
+    this.setState({grid, status: "Random walls generated", stats: {visited: 0, path: 0, distance: null}});
+  }
+
+  clearAnimationClasses() {
+    document.querySelectorAll(".node").forEach(element => {
+      element.classList.remove("node-visited", "node-shortest-path");
+    });
+  }
+
   render() {
-    const {grid, mouseIsPressed, isVisualizing, editMode} = this.state;
+    const {grid, mouseIsPressed, isVisualizing, editMode, speed, status, stats} = this.state;
 
     return (
       <>
@@ -171,6 +225,27 @@ export default class PathfindingVisualizer extends Component {
                 Visualize Dijkstra&apos;s Algorithm
               </button>
             </div>
+          </div>
+          <div className="utility-bar">
+            <div className="utility-actions">
+              <button className="secondary-button" onClick={() => this.randomizeWalls()} disabled={isVisualizing}>
+                Randomize walls
+              </button>
+              <button className="secondary-button" onClick={() => this.clearBoard()} disabled={isVisualizing}>
+                Clear board
+              </button>
+              <label className="speed-control">
+                Speed
+                <select value={speed} onChange={event => this.setState({speed: event.target.value})} disabled={isVisualizing}>
+                  <option value="slow">Slow</option>
+                  <option value="normal">Normal</option>
+                  <option value="fast">Fast</option>
+                </select>
+              </label>
+            </div>
+            <span className={`run-status ${status === "Exploring the graph..." ? "run-status-active" : ""}`}>
+              <i /> {status}
+            </span>
           </div>
           <div className="visualizer-subheader">
             <span className="mode-hint">
@@ -215,6 +290,11 @@ export default class PathfindingVisualizer extends Component {
               );
             })}
             </div>
+          </div>
+          <div className="stats-bar" aria-label="Run statistics">
+            <div><strong>{stats.visited}</strong><span>Nodes explored</span></div>
+            <div><strong>{stats.path || "—"}</strong><span>Path steps</span></div>
+            <div><strong>{stats.distance ?? "—"}</strong><span>Distance</span></div>
           </div>
         </div>
       </>

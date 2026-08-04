@@ -133,6 +133,91 @@
   opacity: 0.55;
 }
 
+.utility-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 4px 0;
+}
+
+.utility-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.secondary-button,
+.speed-control select {
+  border: 1px solid rgba(100, 116, 139, 0.65);
+  border-radius: 9px;
+  background: rgba(15, 23, 42, 0.76);
+  color: #cbd5e1;
+  font-size: 0.8rem;
+}
+
+.secondary-button {
+  padding: 8px 11px;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.1s ease;
+}
+
+.secondary-button:hover:not(:disabled) {
+  border-color: #60a5fa;
+  background: rgba(30, 64, 175, 0.4);
+  transform: translateY(-1px);
+}
+
+.secondary-button:disabled,
+.speed-control select:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.speed-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.speed-control select {
+  padding: 7px 9px;
+  outline: none;
+}
+
+.run-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.run-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #64748b;
+}
+
+.run-status-active {
+  color: #93c5fd;
+}
+
+.run-status-active i {
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
+  animation: statusPulse 1s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  50% { transform: scale(1.5); opacity: 0.6; }
+}
+
 .primary-button:hover {
   transform: translateY(-1px);
   filter: brightness(1.05);
@@ -165,4 +250,39 @@
 
 .grid-row {
   display: flex;
+}
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stats-bar div {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+}
+
+.stats-bar strong {
+  color: #f8fafc;
+  font-size: 1rem;
+}
+
+.stats-bar span {
+  color: #94a3b8;
+  font-size: 0.74rem;
+}
+
+@media (max-width: 700px) {
+  .stats-bar div {
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
 }

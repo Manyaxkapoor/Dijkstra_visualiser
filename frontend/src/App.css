@@ -42,6 +42,13 @@
   color: #cbd5f5;
 }
 
+.header-title h1::before {
+  content: "✦";
+  color: #60a5fa;
+  margin-right: 10px;
+  font-size: 0.9em;
+}
+
 .main-layout {
   flex: 1;
   display: flex;
@@ -55,7 +62,25 @@
   max-width: 1280px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
+}
+
+@media (max-width: 700px) {
+  .header {
+    padding: 16px 18px;
+  }
+
+  .header-title h1 {
+    font-size: 1.15rem;
+  }
+
+  .header-title p {
+    font-size: 0.8rem;
+  }
+
+  .main-layout {
+    padding: 16px 12px 24px;
+  }
 }
 
 .footer {
@@ -109,4 +134,3 @@ nav a:active {
     0 0 0 1px rgba(79, 70, 229, 0.75),
     0 12px 25px rgba(15, 23, 42, 0.8);
 }
-
