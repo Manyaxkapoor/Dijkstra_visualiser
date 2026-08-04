@@ -83,9 +83,9 @@ export default class PathfindingVisualizer extends Component {
       }
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          'node node-visited';
-      }, 10 * i);
+        const element = document.getElementById(`node-${node.row}-${node.col}`);
+        if (element) element.classList.add("node-visited");
+      }, 16 * i);
     }
   }
 
@@ -93,12 +93,12 @@ export default class PathfindingVisualizer extends Component {
     for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
       setTimeout(() => {
         const node = nodesInShortestPathOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          'node node-shortest-path';
+        const element = document.getElementById(`node-${node.row}-${node.col}`);
+        if (element) element.classList.add("node-shortest-path");
         if (i === nodesInShortestPathOrder.length - 1) {
           this.setState({isVisualizing: false});
         }
-      }, 50 * i);
+      }, 35 * i);
     }
     if (nodesInShortestPathOrder.length === 0) {
       this.setState({isVisualizing: false});
@@ -120,6 +120,9 @@ export default class PathfindingVisualizer extends Component {
     const startNode = findNode(grid, node => node.isStart);
     const finishNode = findNode(grid, node => node.isFinish);
     if (!startNode || !finishNode) return;
+    document.querySelectorAll(".node").forEach(element => {
+      element.classList.remove("node-visited", "node-shortest-path");
+    });
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     this.setState({grid, isVisualizing: true}, () =>
@@ -136,7 +139,7 @@ export default class PathfindingVisualizer extends Component {
           <div className="visualizer-header">
             <div className="visualizer-header-left">
               <h2>Dijkstra pathfinding visualizer</h2>
-              <p>Draw walls, then watch Dijkstra explore and find the shortest route.</p>
+              <p>Shape the board, choose your endpoints, then watch the shortest route unfold.</p>
             </div>
             <div className="visualizer-controls">
               <button
@@ -169,10 +172,26 @@ export default class PathfindingVisualizer extends Component {
               </button>
             </div>
           </div>
-          <div className="grid">
+          <div className="visualizer-subheader">
+            <span className="mode-hint">
+              {editMode === "wall"
+                ? "Click or drag to draw walls"
+                : editMode === "start"
+                ? "Click a node to move the start"
+                : "Click a node to move the finish"}
+            </span>
+            <div className="legend" aria-label="Node legend">
+              <span><i className="legend-dot legend-start" /> Start</span>
+              <span><i className="legend-dot legend-finish" /> Finish</span>
+              <span><i className="legend-dot legend-wall" /> Wall</span>
+              <span><i className="legend-dot legend-path" /> Shortest path</span>
+            </div>
+          </div>
+          <div className="grid-shell">
+            <div className="grid">
             {grid.map((row, rowIdx) => {
               return (
-                <div key={rowIdx}>
+                <div className="grid-row" key={rowIdx}>
                   {row.map((node, nodeIdx) => {
                     const { row, col, isFinish, isStart, isWall } = node;
                     return (
@@ -195,6 +214,7 @@ export default class PathfindingVisualizer extends Component {
                 </div>
               );
             })}
+            </div>
           </div>
         </div>
       </>
