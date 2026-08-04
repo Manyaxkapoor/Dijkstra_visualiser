@@ -17,6 +17,7 @@ export default class PathfindingVisualizer extends Component {
       grid: [],
       mouseIsPressed: false,
       isVisualizing: false,
+      editMode: "wall",
     };
   }
 
@@ -28,13 +29,35 @@ export default class PathfindingVisualizer extends Component {
   handleMouseDown(row, col) {
     if (this.state.isVisualizing) return;
     const node = this.state.grid[row][col];
+
+    if (this.state.editMode === "start" || this.state.editMode === "finish") {
+      if (
+        (this.state.editMode === "start" && node.isFinish) ||
+        (this.state.editMode === "finish" && node.isStart)
+      ) {
+        return;
+      }
+      const newGrid = getNewGridWithEndpoint(
+        this.state.grid,
+        row,
+        col,
+        this.state.editMode
+      );
+      this.setState({grid: newGrid, mouseIsPressed: false});
+      return;
+    }
+
     if (node.isStart || node.isFinish) return;
     const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
     this.setState({grid: newGrid, mouseIsPressed: true});
   }
 
   handleMouseEnter(row, col) {
-    if (!this.state.mouseIsPressed || this.state.isVisualizing) return;
+    if (
+      !this.state.mouseIsPressed ||
+      this.state.isVisualizing ||
+      this.state.editMode !== "wall"
+    ) return;
     const node = this.state.grid[row][col];
     if (node.isStart || node.isFinish) return;
     const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
@@ -43,6 +66,11 @@ export default class PathfindingVisualizer extends Component {
 
   handleMouseUp() {
     this.setState({mouseIsPressed: false});
+  }
+
+  setEditMode(editMode) {
+    if (this.state.isVisualizing) return;
+    this.setState({editMode, mouseIsPressed: false});
   }
 
   animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
@@ -89,8 +117,9 @@ export default class PathfindingVisualizer extends Component {
         previousNode: null,
       }))
     );
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const startNode = findNode(grid, node => node.isStart);
+    const finishNode = findNode(grid, node => node.isFinish);
+    if (!startNode || !finishNode) return;
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     this.setState({grid, isVisualizing: true}, () =>
@@ -99,7 +128,7 @@ export default class PathfindingVisualizer extends Component {
   }
 
   render() {
-    const {grid, mouseIsPressed, isVisualizing} = this.state;
+    const {grid, mouseIsPressed, isVisualizing, editMode} = this.state;
 
     return (
       <>
@@ -110,6 +139,27 @@ export default class PathfindingVisualizer extends Component {
               <p>Draw walls, then watch Dijkstra explore and find the shortest route.</p>
             </div>
             <div className="visualizer-controls">
+              <button
+                className={`mode-button ${editMode === "wall" ? "mode-button-active" : ""}`}
+                onClick={() => this.setEditMode("wall")}
+                disabled={isVisualizing}
+              >
+                Draw walls
+              </button>
+              <button
+                className={`mode-button ${editMode === "start" ? "mode-button-active" : ""}`}
+                onClick={() => this.setEditMode("start")}
+                disabled={isVisualizing}
+              >
+                Set start
+              </button>
+              <button
+                className={`mode-button ${editMode === "finish" ? "mode-button-active" : ""}`}
+                onClick={() => this.setEditMode("finish")}
+                disabled={isVisualizing}
+              >
+                Set finish
+              </button>
               <button
                 className="primary-button"
                 onClick={() => this.visualizeDijkstra()}
@@ -175,6 +225,25 @@ const createNode = (col, row) => {
     isWall: false,
     previousNode: null,
   };
+};
+
+const findNode = (grid, predicate) => {
+  for (const row of grid) {
+    const node = row.find(predicate);
+    if (node) return node;
+  }
+  return null;
+};
+
+const getNewGridWithEndpoint = (grid, row, col, endpoint) => {
+  return grid.map(currentRow =>
+    currentRow.map(node => ({
+      ...node,
+      isStart: endpoint === "start" ? node.row === row && node.col === col : node.isStart,
+      isFinish: endpoint === "finish" ? node.row === row && node.col === col : node.isFinish,
+      isWall: node.row === row && node.col === col ? false : node.isWall,
+    }))
+  );
 };
 
 const getNewGridWithWallToggled = (grid, row, col) => {
