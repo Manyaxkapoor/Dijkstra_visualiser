@@ -42,13 +42,6 @@
   color: #cbd5f5;
 }
 
-.header-title h1::before {
-  content: "✦";
-  color: #60a5fa;
-  margin-right: 10px;
-  font-size: 0.9em;
-}
-
 .main-layout {
   flex: 1;
   display: flex;
